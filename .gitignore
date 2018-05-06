@@ -1,0 +1,10 @@
+vendor/
+tmp/
+internal/clroot/db.bolt
+internal/clroot/log.jsonl
+internal/gethnet/datadir/geth/
+internal/gethnet/datadir/geth.ipc
+internal/gethnet/datadir/history
+/chainlink
+.envrc
+node_modules/
