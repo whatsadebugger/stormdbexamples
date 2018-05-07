@@ -1,2 +1,3 @@
 # Some examples of using storm db
-this is still a work in progress but should be up soon 
+The purpose of this repo was to create some examples for myself.
+I will update it whenever I play with stormdb. 
