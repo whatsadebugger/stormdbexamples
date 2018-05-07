@@ -8,16 +8,18 @@ import (
 
 // User holds basic account information
 type User struct {
-	ID        int       `storm:"id"`     // primary key
-	Group     string    `storm:"index"`  // this field will be indexed
-	Email     string    `storm:"unique"` // this field will be indexed with a unique constraint
-	Name      string    // this field will not be indexed
-	Age       int       `storm:"index"`
-	CreatedAt time.Time `storm: "index"`
+	ID        int    `storm:"id"`     // primary key
+	Group     string `storm:"index"`  // this field will be indexed
+	Email     string `storm:"unique"` // this field will be indexed with a unique constraint
+	Name      string // this field will not be indexed
+	Age       int    `storm:"index"`
+	CreatedAt time.Time
 }
 
 func main() {
 	fmt.Print("Welcome to stormdb examples\n")
+	db, err := storm.Open("examples.db")
+	PanicIfError(err)
 
 	user := User{
 		ID:        13,
@@ -28,7 +30,36 @@ func main() {
 		CreatedAt: time.Now(),
 	}
 
-	// PanicIfError(storm.Save(&user))
+	user1 := User{
+		ID:        14,
+		Group:     "student",
+		Email:     "joe@goodschool.net",
+		Name:      "Joseph",
+		Age:       21,
+		CreatedAt: time.Now(),
+	}
+
+	user2 := User{
+		ID:        15,
+		Group:     "teacher",
+		Email:     "john@goodschool.net",
+		Name:      "John Titor",
+		Age:       18,
+		CreatedAt: time.Now(),
+	}
+
+	PanicIfError(db.Save(&user))
+	db.Save(&user1)
+	db.Save(&user2)
+
+	var lookup []User
+	// example of finding a user by email
+	db.Find("Email", "john@goodschool.net", &lookup)
+	var all []User
+	// all users in reverse by ID
+	db.All(&all, storm.Reverse())
+	fmt.Printf("%+v", lookup)
+	fmt.Printf("%+v", all)
 }
 
 // PanicIfError will panic if err != nil
