@@ -52,14 +52,17 @@ func main() {
 	db.Save(&user1)
 	db.Save(&user2)
 
-	var lookup []User
 	// example of finding a user by email
+	var lookup []User
 	db.Find("Email", "john@goodschool.net", &lookup)
-	var all []User
+	fmt.Printf("%+v\n", lookup)
+
 	// all users in reverse by ID
+	var all []User
 	db.All(&all, storm.Reverse())
-	fmt.Printf("%+v", lookup)
-	fmt.Printf("%+v", all)
+	for _, v := range all {
+		fmt.Printf("%+v\n", v)
+	}
 }
 
 // PanicIfError will panic if err != nil
