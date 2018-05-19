@@ -8,12 +8,20 @@ import (
 
 // User holds basic account information
 type User struct {
-	ID        int    `storm:"id"`     // primary key
+	ID        int
 	Group     string `storm:"index"`  // this field will be indexed
 	Email     string `storm:"unique"` // this field will be indexed with a unique constraint
 	Name      string // this field will not be indexed
 	Age       int    `storm:"index"`
 	CreatedAt time.Time
+}
+
+// School is a great place
+type School struct {
+	ID      int
+	Name    string `storm:"index"`
+	City    string `storm:"index"`
+	Founded int    `storm:"index"`
 }
 
 func main() {
@@ -48,14 +56,45 @@ func main() {
 		CreatedAt: time.Now(),
 	}
 
-	PanicIfError(db.Save(&user))
+	school0 := School{
+		ID:      1,
+		Name:    "Jasper",
+		City:    "Plano",
+		Founded: 1996,
+	}
+
+	school1 := School{
+		ID:      2,
+		Name:    "Rice",
+		City:    "Plano",
+		Founded: 1999,
+	}
+
+	db.Save(&school0)
+	db.Save(&school1)
+
+	db.Save(&user)
 	db.Save(&user1)
 	db.Save(&user2)
 
 	// example of finding a user by email
 	var lookup []User
 	db.Find("Email", "john@goodschool.net", &lookup)
-	fmt.Printf("%+v\n", lookup)
+	fmt.Printf("Found Student with matching email %+v\n", lookup)
+
+	// Find a student by ID
+	err = db.Find("ID", 13, &lookup)
+	PanicIfError(err)
+	fmt.Printf("Found Student with matching ID %+v\n", lookup)
+
+	// Find all schools using the name index and in reverse order
+	var foundSchools []School
+	err = db.AllByIndex("Name", &foundSchools, storm.Reverse())
+	PanicIfError(err)
+
+	for i, v := range foundSchools {
+		fmt.Printf("School #%v: %+v\n", i, v)
+	}
 
 	// all users in reverse by ID
 	var all []User
@@ -63,6 +102,7 @@ func main() {
 	for _, v := range all {
 		fmt.Printf("%+v\n", v)
 	}
+
 }
 
 // PanicIfError will panic if err != nil
