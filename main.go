@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/asdine/storm"
+	"github.com/asdine/storm/q"
 	"time"
 )
 
@@ -29,7 +30,7 @@ func main() {
 	db, err := storm.Open("examples.db")
 	PanicIfError(err)
 
-	user := User{
+	user0 := User{
 		ID:        13,
 		Group:     "student",
 		Email:     "ahmad@goodschool.net",
@@ -44,6 +45,15 @@ func main() {
 		Email:     "joe@goodschool.net",
 		Name:      "Joseph",
 		Age:       21,
+		CreatedAt: time.Now(),
+	}
+
+	user3 := User{
+		ID:        16,
+		Group:     "student",
+		Email:     "derk@goodschool.net",
+		Name:      "derk",
+		Age:       22,
 		CreatedAt: time.Now(),
 	}
 
@@ -73,19 +83,20 @@ func main() {
 	db.Save(&school0)
 	db.Save(&school1)
 
-	db.Save(&user)
+	db.Save(&user0)
 	db.Save(&user1)
 	db.Save(&user2)
+	db.Save(&user3)
 
 	// example of finding a user by email
-	var lookup []User
-	db.Find("Email", "john@goodschool.net", &lookup)
-	fmt.Printf("Found Student with matching email %+v\n", lookup)
+	var users []User
+	db.Find("Email", "john@goodschool.net", &users)
+	fmt.Printf("Found User with matching email:\n %+v\n", users)
 
 	// Find a student by ID
-	err = db.Find("ID", 13, &lookup)
+	err = db.Find("ID", 13, &users)
 	PanicIfError(err)
-	fmt.Printf("Found Student with matching ID %+v\n", lookup)
+	fmt.Printf("Found Student with matching ID:\n %+v\n", users)
 
 	// Find all schools using the name index and in reverse order
 	var foundSchools []School
@@ -93,15 +104,20 @@ func main() {
 	PanicIfError(err)
 
 	for i, v := range foundSchools {
-		fmt.Printf("School #%v: %+v\n", i, v)
+		fmt.Printf("School #%v:\n %+v\n", i, v)
 	}
 
 	// all users in reverse by ID
+	fmt.Println("All users reversed:")
 	var all []User
 	db.All(&all, storm.Reverse())
 	for _, v := range all {
-		fmt.Printf("%+v\n", v)
+		fmt.Printf(" %+v\n", v)
 	}
+
+	// find students using advanced queries
+	db.Select(q.Eq("Group", "student")).Limit(5).Reverse().OrderBy("Age").Find(&users)
+	fmt.Printf("Students Group: \n %+v\n", users)
 
 }
 
