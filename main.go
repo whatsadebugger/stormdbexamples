@@ -119,6 +119,12 @@ func main() {
 	db.Select(q.Eq("Group", "student")).Limit(5).Reverse().OrderBy("Age").Find(&users)
 	fmt.Printf("Students Group: \n %+v\n", users)
 
+	db.Select(q.Eq("Group", "student")).Limit(5).Reverse().OrderBy("Email").Find(&users)
+	fmt.Printf("Students Group: \n %+v\n", users)
+
+	db.Select(q.Eq("Group", "student")).Limit(5).Reverse().OrderBy("ID").Find(&users)
+	fmt.Printf("Students Group: \n %+v\n", users)
+
 }
 
 // PanicIfError will panic if err != nil
