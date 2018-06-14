@@ -99,6 +99,12 @@ func main() {
 	PanicIfError(err)
 	fmt.Printf("Found Student with matching ID:\n %+v\n", users)
 
+	// update a student
+	user0.Name = "sam"
+	err = db.Update(&user0)
+	PanicIfError(err)
+	fmt.Printf("Updated student 13\n")
+
 	// Find all schools using the name index and in reverse order
 	var foundSchools []School
 	err = db.AllByIndex("Name", &foundSchools, storm.Reverse())
